@@ -7,7 +7,7 @@
 //------------------------------------------------------------------------------
 const polishWords = [];
 
-const priceToNumber = function (price) {
+const priceToArray = function (price) {
     let p = price;
     if (typeof p !== 'number' || typeof p !== 'string') {
         p = null;
@@ -35,6 +35,7 @@ const setPriceFormat = function (format) {
      * 
      * [zl_value_number] === "120"
      * [gr_value_number] === "50"
+     * [full_value_number] === "120,50"
      * [zl_value_words] === "sto dwadzieścia"
      * [gr_value_words] === "pięćdziesiąt"
      * [zl_abbrev] === "zł"
@@ -54,6 +55,14 @@ const setPriceFormat = function (format) {
     let typeA = "[zl_value_words] [zl_full] [gr_value_words] [gr_full]",
         typeB = "",
         formatArr;
+    /* price: 120,50zł
+     * typeA: sto dwadzieścia złotych pięćdziesiąt groszy
+     * typeB: stodwadzieścia zł pięćdziesiąt gr
+     * typeC: stodwadzieścia zł 50/100
+     * typeD: 120 zł 50 gr
+     * typeE: 120,50 zł
+     */
+     
     if (typeof format === 'string') {
         let tmp = formatToArray(format);
         formatArr = (tmp.length) ? tmp : formatToArray(typeA);
@@ -66,27 +75,39 @@ class priceFormatMethods {
     constructon (arr) {
         [this.zl, this.gr] = arr;
     }
+    
     zlValueNumber () {
         return `${this.zl}`;
     }
-    zlValueWords () {
-
-    }
+    
     grValueNumber () {
         return (`${this.gr}00`).slice(0,2);
     }
+    
+    fullValueNumber () {
+        return `${this.zl},${this.gr}`;
+    }
+    
+    zlValueWords () {
+
+    }
+    
     grValueWords () {
 
     }
+    
     zlAbbrev () {
         return "zł";
     }
+    
     grAbbrev () {
         return "gr";
     }
+    
     grShort () {
         return `${this.grValueNumber()}/100`;
     }
+    
     zlFull () {
         if (this.zl === 1) { 
             return "złoty"; 
@@ -100,6 +121,7 @@ class priceFormatMethods {
             return "złotych"; 
         }
     }
+    
     grFull () {
         if (this.gr === 1) {
             return "grosz";
@@ -120,7 +142,7 @@ class priceFormatMethods {
 //------------------------------------------------------------------------------
 export default class PriceToWords {
     constructor (price) {
-        this.priceArray = priceToNumber(price);
+        this.priceArray = priceToArray(price);
     }
     
     getPrice (format) {

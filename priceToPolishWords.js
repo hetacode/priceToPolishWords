@@ -1,5 +1,6 @@
-/*
- * 
+/* 
+ * Convert price (number) to words (polish)
+ * Author: Tomasz Sochacki (Drogimex)
  */
 
 //------------------------------------------------------------------------------

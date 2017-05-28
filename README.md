@@ -27,7 +27,7 @@ price.getPrice('c');
 ### Formaty konwertowania stosowane w metodzie getPrice
 W przypadku pominięcia parametru w wywołaniu metody getPrice użyty zostanie forma domyślny. Funkcja umożliwia określenie własnego formatu na podstawie dostępnych elementów składowych lub określenie jednego z formatów predefiniowanych.
 
-***Sposób podania formatu konwersji dla metody getPrice:
+*** Sposób podania formatu konwersji dla metody getPrice:
 ```
 price.getPrice('b'); 
 //w przypadku formaty predefiniowanego
@@ -37,7 +37,7 @@ price.getPrice('[zl_value_words] [zl_abbrev]');
 ```
 Własne reguły podaje się z jako ciąg znakowy, zawierający poszczególne elementy zapisywane w nawiasach kwadratowych w notacji z podkreśleniami dolnymi. Wszystkie znaki nie będące poprawnym elementem formatowania [...] zostaną zignorowane.
 
-***Dopuszczalne elementy:
+*** Dopuszczalne elementy:
 Kwota testowa: 120,50zł
 ```
 [zl_value_number]   === "120"
@@ -54,7 +54,7 @@ Kwota testowa: 120,50zł
 [gr_full] === "grosz" / "grosze" / "groszy"
 ```
 
-***Formaty predefniowane:
+*** Formaty predefniowane:
 Formaty można podawać w zapisie "a" lub "A".
 ```
 'A' === '[zl_value_words] [zl_full] [gr_value_words] [gr_full]'
@@ -75,4 +75,4 @@ Formaty można podawać w zapisie "a" lub "A".
 
 W przypadku podania błędnej kwoty przy tworzeniu obiektu PriceToWords zwrócona zostanie wartość "Podana kwota jest nieprawidłowa!".
 
-***Funkcja pozwala na konwertowanie kwot od zera zł do 999.999.999.999,99 (jeden trylion - 0,01).
+*** Funkcja pozwala na konwertowanie kwot od zera zł do 999.999.999.999,99 (jeden trylion - 0,01).

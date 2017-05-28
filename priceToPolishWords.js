@@ -79,7 +79,7 @@ const setPriceFormat = function (format) {
                                    .replace(/(_)([a-z])/gi,(v,p1,p2) => p2.toUpperCase()));
     
     let defFormats = {
-            typeA: "[zl_value_words] [zl_full] [gr_value_words] [gr_full]",
+            typeA: '[zl_value_words] [zl_full] [gr_value_words] [gr_full]',
                    //sto dwadzieścia pięć złotych pięćdziesiąt groszy
                    
             typeB: '[zl_value_words] [zl_abbrev] [gr_value_words] [gr_abrev]',
@@ -91,7 +91,7 @@ const setPriceFormat = function (format) {
             typeD: '[zl_value_number] [zl_abbrev] [gr_value_number] [gr_abbrev]',
                    //120 zł 50 gr
                    
-            typeE: "[full_value_number] [zl_abbrev]"
+            typeE: '[full_value_number] [zl_abbrev]'
                    //120,50 zł
         },
         formatArr = formatToArray(defFormats.typeA);
@@ -213,7 +213,7 @@ const priceFormatMethods = {
 //------------------------------------------------------------------------------
 class PriceToWords {
     constructor (price) {
-        this.priceArray = priceToArray(price);
+        this.priceArray = (price) ? priceToArray(price) : null;
     }
     
     getPrice (format) {

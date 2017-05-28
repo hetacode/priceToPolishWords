@@ -48,24 +48,21 @@ const polishWords = [
 ];
 
 const priceToArray = function (price) {
-    //if (typeof price !== 'number' || typeof price !== 'string') {
-    //    price = null;
-    //}
-    //else {
-        price = price.toString()
-                .replace(/[^\d,.]/g,"")                //"100.240,50zł" -> "100.240,50"
-                .replace(/[.,](?!\d+$)|\.$/g,"")       //"100.240,50"   -> "100240,50"
-                .split(/[.,]/)                        //"100240,50"    -> ["100240","50"]
-                .map((v,i) => (i===0) ? v : +(+((+v).toPrecision(2))+'').slice(0,2));
-        if (!price.every(v => v >= 0 && v < 1e12)) { //max bilion (PL) === trillion (EN)
-            price = null;
-        }
-    //}
+    price = price.toString()
+            .replace(/[^\d,.]/g,"")          //"100.240,50zł" -> "100.240,50"
+            .replace(/[.,](?!\d+$)|\.$/g,"") //"100.240,50"   -> "100240,50"
+            .split(/[.,]/)                   //"100240,50"    -> ["100240","50"]
+            .map((v,i) => (i===0) ? v : +(+((+v).toPrecision(2))+'').slice(0,2));
+    if (!price.every(v => v >= 0 && v < 1e12)) {
+        price = null;
+    }
     return price;
 };
 
 const setPriceFormat = function (format) {
     /* 
+     * price: 120,50zł
+     * 
      * [zl_value_number] === "120"
      * [gr_value_number] === "50"
      * [full_value_number] === "120,50"
@@ -79,14 +76,25 @@ const setPriceFormat = function (format) {
      */
     const formatToArray = (str) => str.match(/\[[a-z_]+\]/gi)
                                    .map(v => v.slice(1,-1)
-                                   .replace(/(_)([a-z])/gi,(v,$1,$2) => $2.toUpperCase()));
+                                   .replace(/(_)([a-z])/gi,(v,p1,p2) => p2.toUpperCase()));
     
     let defFormats = {
             typeA: "[zl_value_words] [zl_full] [gr_value_words] [gr_full]",
-            typeB: "[full_value_number] [zl_abbrev]"
+                   //sto dwadzieścia pięć złotych pięćdziesiąt groszy
+                   
+            typeB: '[zl_value_words] [zl_abbrev] [gr_value_words] [gr_abrev]',
+                   //sto dwadzieścia pięć zł pięćdziesiąt gr
+                   
+            typeC: '[zl_value_words] [zl_abbrev] [gr_short]',
+                   //sto dwadzieścia pięć zł 50/100
+            
+            typeD: '[zl_value_number] [zl_abbrev] [gr_value_number] [gr_abbrev]',
+                   //120 zł 50 gr
+                   
+            typeE: "[full_value_number] [zl_abbrev]"
+                   //120,50 zł
         },
         formatArr = formatToArray(defFormats.typeA);
-    
     if (typeof format === 'string') {
     	let type = `type${format.toUpperCase()}`;
         if (defFormats.hasOwnProperty(type)) {
@@ -98,9 +106,7 @@ const setPriceFormat = function (format) {
         }
         
     }
-
-    return formatArr;
-    //For example: ["zlValueNumber", "zlAbbrev", "grValueNumber", "grAbbrev"]
+    return formatArr; //e.g: ["zlValueNumber", "zlAbbrev", "grValueNumber", "grAbbrev"]
 };
 
 const numberToWords = num => {
@@ -133,7 +139,6 @@ const numberToWords = num => {
         }
     });
 };
-
 
 const priceFormatMethods = {
     zlValueNumber (arr) {

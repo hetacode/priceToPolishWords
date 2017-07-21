@@ -1,6 +1,6 @@
-/* 
+/**
  * Convert price (number) to words (polish)
- * Author: Tomasz Sochacki (Drogimex)
+ * @author Tomasz Sochacki - Drogimex Programming
  */
 
 //------------------------------------------------------------------------------
@@ -48,186 +48,234 @@ const polishWords = [
     ['jeden', 1]
 ];
 
-const priceToArray = function (price) {
-    price = price.toString()
-            .replace(/[^\d,.]/g,"")          //"100.240,50zł" -> "100.240,50"
-            .replace(/[.,](?!\d+$)|\.$/g,"") //"100.240,50"   -> "100240,50"
-            .split(/[.,]/)                   //"100240,50"    -> ["100240","50"]
-            .map((v,i) => (i===0) ? v : +(+((+v).toPrecision(2))+'').slice(0,2));
-    if (!price.every(v => v >= 0 && v < 1e12)) {
-        price = null;
+/**
+ * Function parsing price from user (argument for constructor PriceToPolishWord)
+ * 
+ * @param {string|number} price
+ * @return {null|array} If price is valid return array, when invalid return null
+ */
+const priceToArray = function ( price ) {
+    price = price.toString();                          //'price' can be string or number
+    price = price.replace( /[., ](?!\d+$)|\.$/g, '' ); //'1,120.50'   -> '1120.50'
+    price = price.split( /[.,]/ );                     //'1120.50'    -> ['1120', '50']
+    
+    //Convert values to number:
+    price = price.map( ( v, i ) => {
+        //price[0] -> złote:
+        if ( i === 0 ) {
+            return +v; //For ",50" is ['', '50'] -> "zlote": (+'' === 0)
+        }
+        //price[1] -> grosze:
+        else {
+            const val = v.toString().split( '' );
+            if ( val.length < 3 ) {
+                return +v;
+            }
+            const a = val[0];
+            const b = ( +val[2] < 5 ) ? val[1] : +val[1] + 1;
+            return +( a + b );
+        }
+    } );
+       
+    if ( !price.every( v => v >= 0 && v < 1e12 ) ) {
+        return null;
+    }
+    if ( price.length === 1 ) {
+        price.push( 0 ); //Add 'grosze'
     }
     return price;
 };
 
-const setPriceFormat = function (format) {
-    /* 
-     * price: 120,50zł
+/**
+ * Function is getting rules for price formatting.
+ * For invalid rules function return default formatting rules.
+ * 
+ * @param {string} Rules formatting returned value
+ * @return {array} Array of the formatting methods
+ */
+const setPriceFormat = function ( formatRules ) {
+    /**
+     * Example price: "125,50zł"
      * 
-     * [zl_value_number] === "120"
-     * [gr_value_number] === "50"
-     * [full_value_number] === "120,50"
-     * [zl_value_words] === "sto dwadzieścia"
-     * [gr_value_words] === "pięćdziesiąt"
-     * [zl_abbrev] === "zł"
-     * [gr_abbrev] === "gr"
-     * [gr_short] === "50/100"
-     * [zl_full] = "złoty" / "złote" / "złotych"
-     * [gr_full] = "grosz" / "grosze" / "groszy"
+     * zl-number === "125"
+     * gr-number === "50"
+     * zl-words === "sto dwadzieścia pięć"
+     * gr-words === "pięćdziesiąt"
+     * zl === "zł"
+     * gr === "gr"
+     * gr-short === "50/100"
+     * zl-full === "złoty" || "złote"  || "złotych"
+     * gr-full === "grosz" || "grosze" || "groszy"
      */
-    const formatToArray = (str) => str.match(/\[[a-z_]+\]/gi)
-                                   .map(v => v.slice(1,-1)
-                                   .replace(/(_)([a-z])/gi,(v,p1,p2) => p2.toUpperCase()));
     
-    let defFormats = {
-            typeA: '[zl_value_words] [zl_full] [gr_value_words] [gr_full]',
-                   //sto dwadzieścia pięć złotych pięćdziesiąt groszy
-                   
-            typeB: '[zl_value_words] [zl_abbrev] [gr_value_words] [gr_abrev]',
-                   //sto dwadzieścia pięć zł pięćdziesiąt gr
-                   
-            typeC: '[zl_value_words] [zl_abbrev] [gr_short]',
-                   //sto dwadzieścia pięć zł 50/100
-            
-            typeD: '[zl_value_number] [zl_abbrev] [gr_value_number] [gr_abbrev]',
-                   //120 zł 50 gr
-                   
-            typeE: '[full_value_number] [zl_abbrev]'
-                   //120,50 zł
-        },
-        formatArr = formatToArray(defFormats.typeA);
-    if (typeof format === 'string') {
-    	let type = `type${format.toUpperCase()}`;
-        if (defFormats.hasOwnProperty(type)) {
-            formatArr = formatToArray(defFormats[type]);
+    /*
+     * Function convert rules (e.g. 'zl-words') to valid convertion method names
+     * 
+     * @param {string} User formatting rules as string 
+     * @return {array} For example: [zlWords, zlFull, ...]
+     */
+    const formatRulesToMethodName = function ( str ) {
+        let rulesToArray = str.match( /[-a-z]+/gi ); //'zl-words zl' -> ['zl-words', 'zl']
+        return rulesToArray.map( oneRule => {
+            return oneRule.replace( /(-)([a-z])/gi, ( match, p1, p2 ) => {
+                return p2.toUpperCase(); //'zl-words' -> 'zlWords'
+            } );
+        } ); //['zl-words', 'zl'] -> ['zlWords', 'zl']
+    };
+    
+    const defaultFormats = {
+        typeA: 'zl-words zl-full gr-words gr-full', //sto dwadzieścia pięć złotych pięćdziesiąt groszy
+        typeB: 'zl-words zl gr-words gr', //sto dwadzieścia pięć zł pięćdziesiąt gr
+        typeC: 'zl-words zl gr-short', //sto dwadzieścia pięć zł 50/100
+        typeD: 'zl-number zl gr-number gr' //125 zł 50 gr
+    };
+    
+    //In first instance set default rules (typeA)
+    let formatRulesArray = formatRulesToMethodName( defaultFormats.typeA );
+    
+    if ( typeof formatRules === 'string' ) {
+        if ( formatRules.length === 1 ) {
+            let type = `type${formatRules.toUpperCase()}`;
+            if ( defaultFormats.hasOwnProperty( type ) ) {
+                formatRulesArray = formatRulesToMethodName( defaultFormats[type] );
+            }
         }
         else {
-            let tmp = formatToArray(format);
-            formatArr = (tmp.length) ? tmp : formatArr;
+            let tmp = formatRulesToMethodName( formatRules );
+            formatRulesArray = ( tmp.length ) ? tmp : formatRulesArray;
         }
-        
     }
-    return formatArr; //e.g: ["zlValueNumber", "zlAbbrev", "grValueNumber", "grAbbrev"]
+    else if ( typeof formatRules !== 'undefined' ) {
+        formatRulesArray = [''];
+    }
+    
+    return formatRulesArray; //e.g: ['zlWords', 'zl', 'grWords', 'gr']
 };
 
 const numberToWords = num => {
     num = +num;
-    return (!num || num <= 0) ? 'zero' 
-        : polishWords.reduce((words, [str, val]) => {
-        let c = ~~(num / val);
-        if (!c) return words;
+    if ( !num || num <= 0 ) {
+        return 'zero';
+    }
+    return polishWords.reduce( ( words, [str, val] ) => {
+        const c = ~~( num / val );
+        if ( !c ) {
+            return words;
+        }
         num %= val;
-        return words + (val >= 1000 ? numberToWords(c) + ' ' : '') 
-         + str + (num ? ` `: '');
-    }, '').replace(/(n |[ay] |[ćm] )(tysiąc|milion|miliard)/g,(match, p1, p2) => {
-        if (p2 === 'tysiąc') {
-            switch(p1) {
-                case 'n ': return p2;
-                case 'a ':
-                case 'y ': return `${p1}tysiące`;
-                case 'ć ':
-                case 'm ': return `${p1}tysięcy`;
+        return words + ( val >= 1000 ? numberToWords( c ) + ' ' : '' ) + str + ( num ? ' ': '' );
+    }, '' ).replace( /(n |[ay] |[ćm] )(tysiąc|milion|miliard)/g,( match, p1, p2 ) => {
+        if ( p2 === 'tysiąc' ) {
+            switch( p1 ) {
+            case 'n ': return p2;
+            case 'a ':
+            case 'y ': return `${p1}tysiące`;
+            case 'ć ':
+            case 'm ': return `${p1}tysięcy`;
             }
         }
         else {
-            switch(p1) {
-                case 'n ': return p2;
-                case 'a ':
-                case 'y ': return `${p1}${p2}y`;
-                case 'ć ':
-                case 'm ': return `${p1}${p2}ów`;
+            switch( p1 ) {
+            case 'n ': return p2;
+            case 'a ':
+            case 'y ': return `${p1}${p2}y`;
+            case 'ć ':
+            case 'm ': return `${p1}${p2}ów`;
             }
         }
-    });
+    } );
 };
 
-const priceFormatMethods = {
-    zlValueNumber (arr) {
-        return arr[0];
-    },
-    
-    grValueNumber (arr) {
-        return (arr[1] < 10) ? `0${arr[1]}` : arr[1];
-    },
-    
-    fullValueNumber (arr) {
-        let zl = (arr[0]) ? arr[0] : '0',
-            gr = (arr[1]) ? arr[1] : '0';
-        return `${zl},${gr}`;
-    },
-    
-    zlValueWords (arr) {
-        return numberToWords(arr[0]);
-    },
-    
-    grValueWords (arr) {
-        return numberToWords(arr[1]);
-    },
-    
-    zlAbbrev () {
-        return "zł";
-    },
-    
-    grAbbrev () {
-        return "gr";
-    },
-    
-    grShort (arr) {
-        return `${this.grValueNumber(arr)}/100`;
-    },
-    
-    zlFull (arr) {
-        if (arr[0] === 1) { 
-            return "złoty"; 
-        }
-        if (arr[0] >= 5 && arr[0] < 21) {
-            return "złotych";
-        }
-        let zl = arr[0].toString().split('').slice(-1);
-        if (/[234]/.test(zl)) { 
-            return "złote"; 
-        }
-        else { 
-            return "złotych"; 
-        }
-    },
-    
-    grFull (arr) {
-        if (arr[1] === 1) {
-            return "grosz";
-        }
-        if (arr[0] >= 5 && arr[0] < 21) {
-            return "groszy";
-        }
-        let gr = arr[1].toString().split('').slice(-1);
-        if (/[234]/.test(gr)) {
-            return "grosze";
-        }
-        else {
-            return "groszy";
-        }
-    },
-};
-
-//------------------------------------------------------------------------------
-// Export class
-//------------------------------------------------------------------------------
-class PriceToWords {
-    constructor (price) {
-        this.priceArray = (price) ? priceToArray(price) : null;
+class ConvertMethods {
+    constructor ( priceAsArray ) {
+        this.price = priceAsArray;
+    }
+    zlNumber () {
+        return this.price[0];
     }
     
-    getPrice (format) {
-            format = setPriceFormat(format);
-        let result = '';
-        if (!this.priceArray) {
-            return 'Podana kwota jest nieprawidłowa!';
+    grNumber () {
+        return ( this.price[1] < 10 ) ? `0${this.price[1]}` : this.price[1];
+    }
+    
+    zlWords () {
+        return numberToWords( this.price[0] );
+    }
+    
+    grWords () {
+        return numberToWords( this.price[1] );
+    }
+    
+    zl () {
+        return 'zł';
+    }
+    
+    gr () {
+        return 'gr';
+    }
+    
+    grShort () {
+        return `${this.grNumber( this.price )}/100`;
+    }
+    
+    zlFull () {
+        if ( this.price[0] === 1 ) { 
+            return 'złoty'; 
         }
-        for (let method of format) {
-            result += priceFormatMethods[method](this.priceArray) + ' ';
+        if ( this.price[0] >= 5 && this.price[0] < 21 ) {
+            return 'złotych';
+        }
+        let zl = this.price[0].toString().split( '' ).slice( -1 );
+        if ( /[234]/.test( zl ) ) { 
+            return 'złote'; 
+        }
+        else { 
+            return 'złotych'; 
+        }
+    }
+    
+    grFull () {
+        if ( this.price[1] === 1 ) {
+            return 'grosz';
+        }
+        if ( this.price[0] === 0 || ( this.price[0] >= 5 && this.price[0] < 21 ) ) {
+            return 'groszy';
+        }
+        let gr = this.price[1].toString().split( '' ).slice( -1 );
+        if ( /[234]/.test( gr ) ) {
+            return 'grosze';
+        }
+        else {
+            return 'groszy';
+        }
+    }
+}
+
+//------------------------------------------------------------------------------
+// Exports
+//------------------------------------------------------------------------------
+class PriceToPolishWords {
+    constructor ( price, errMsg ) {
+        this.priceArray = ( price ) ? priceToArray( price ) : null;
+        this.errMsg = typeof errMsg === 'string' ? errMsg : 'Błędna kwota!';
+    }
+    
+    getPrice ( format ) {
+        format = setPriceFormat( format );
+        const convert = new ConvertMethods( this.priceArray );
+        let result = '';
+        if ( !this.priceArray ) {
+            return this.errMsg;
+        }
+        for ( let method of format ) {
+            try {
+                result += convert[method]() + ' ';
+            } catch ( err ) {
+                return 'Invalid format!';
+            }
         }
         return result.trim();
     }
 }
 
-export default PriceToWords;
+module.exports = PriceToPolishWords;

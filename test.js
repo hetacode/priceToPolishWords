@@ -1,6 +1,3 @@
-/* 
- * 
- */
 const assert = require('chai').assert;
 const PriceToPolishWords = require('./priceToPolishWords');
 

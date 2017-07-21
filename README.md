@@ -2,7 +2,7 @@
 
 Skrypt umożliwiający przedstawienie kwot w postaci słownej (w języku polskim). Funkcja pobiera kwotę jako wartość liczbową lub ciąg znakowy i zwraca jej podstać słowną zgodną ze wskazanym formatem wyświetlania (lub wg formatu domyślnego).
 
-###Instalacja i uruchomienie modułu
+### Instalacja i uruchomienie modułu
 Aby pobrać moduł npm należy użyć komendy:
 ```
 npm install --save-dev price-to-polish-words

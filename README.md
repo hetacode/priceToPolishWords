@@ -81,3 +81,16 @@ typeD: 'zl-number zl gr-number gr'          //125 zł 50 gr
 ```
 
 ***Funkcja pozwala na konwertowanie kwot od zera zł do 999,999,999,999.99***
+
+### Przykłady
+```
+const PriceToPolishWords = require('price-to-polish-words');
+const price = new PriceToPolishWords('120.50');
+
+price.getPrice(); //'sto dwadzieścia złotych pięćdziesiąt groszy'
+
+price.getPrice('b'); //'sto dwadzieścia zł pięćdziesiąt gr'
+price.getPrice('c'); //'sto dwadzieścia zł 50/100'
+
+price.getPrice('zl-words zl-full gr-words gr'); //'sto dwadzieścia złotych pięćdziesiąt gr'
+```

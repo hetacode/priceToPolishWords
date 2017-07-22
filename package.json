@@ -1,6 +1,6 @@
 {
   "name": "price-to-polish-words",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Convert price to polish words",
   "main": "priceToPolishWords.js",
   "scripts": {
@@ -18,7 +18,6 @@
   "homepage": "https://github.com/drogimex/priceToPolishWords#readme",
   "devDependencies": {
     "chai": "^4.1.0",
-    "eslint": "^4.3.0",
     "mocha": "^3.4.2"
   }
 }

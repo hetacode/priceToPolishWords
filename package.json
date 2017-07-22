@@ -1,6 +1,6 @@
 {
   "name": "price-to-polish-words",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Convert price to polish words",
   "main": "priceToPolishWords.js",
   "scripts": {

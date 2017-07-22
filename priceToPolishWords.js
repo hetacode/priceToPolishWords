@@ -51,8 +51,8 @@ const polishWords = [
 /**
  * Function parsing price from user (argument for constructor PriceToPolishWord)
  * 
- * @param {string|number} price
- * @return {null|array} If price is valid return array, when invalid return null
+ * @param {String|Number} price
+ * @return {Null|Array} If price is valid return array, when invalid return null
  */
 const priceToArray = function ( price ) {
     price = price.toString();                          //'price' can be string or number
@@ -63,7 +63,7 @@ const priceToArray = function ( price ) {
     price = price.map( ( v, i ) => {
         //price[0] -> złote:
         if ( i === 0 ) {
-            return +v; //For ",50" is ['', '50'] -> "zlote": (+'' === 0)
+            return +v;
         }
         //price[1] -> grosze:
         else {
@@ -83,15 +83,15 @@ const priceToArray = function ( price ) {
     if ( price.length === 1 ) {
         price.push( 0 ); //Add 'grosze'
     }
-    return price;
+    return price; //e.g. [125,50]
 };
 
 /**
  * Function is getting rules for price formatting.
  * For invalid rules function return default formatting rules.
  * 
- * @param {string} Rules formatting returned value
- * @return {array} Array of the formatting methods
+ * @param {String} Rules formatting returned value
+ * @return {Array} Array of the formatting methods
  */
 const setPriceFormat = function ( formatRules ) {
     /**
@@ -108,11 +108,11 @@ const setPriceFormat = function ( formatRules ) {
      * gr-full === "grosz" || "grosze" || "groszy"
      */
     
-    /*
+    /**
      * Function convert rules (e.g. 'zl-words') to valid convertion method names
      * 
-     * @param {string} User formatting rules as string 
-     * @return {array} For example: [zlWords, zlFull, ...]
+     * @param {String} User formatting rules as string 
+     * @return {Array} For example: [zlWords, zlFull, ...]
      */
     const formatRulesToMethodName = function ( str ) {
         let rulesToArray = str.match( /[-a-z]+/gi ); //'zl-words zl' -> ['zl-words', 'zl']
@@ -152,6 +152,13 @@ const setPriceFormat = function ( formatRules ) {
     return formatRulesArray; //e.g: ['zlWords', 'zl', 'grWords', 'gr']
 };
 
+/**
+ * Function convert number to polish words
+ * number have to be >= 0 && < 1e12 (max range in array "polishWords")
+ * 
+ * @param {Number} num Number to convert to polish words
+ * @return {String} Words reprezentation of number
+ */
 const numberToWords = num => {
     num = +num;
     if ( !num || num <= 0 ) {
@@ -186,38 +193,77 @@ const numberToWords = num => {
     } );
 };
 
+/**
+ * Methods to convert zl/gr in given format
+ * 
+ * @param {Array} priceArray Array with two elements (number) e.g. [25, 10] -> 25,10zł
+ * @return {String} Zloty or grosze in given format
+ */
 class ConvertMethods {
     constructor ( priceAsArray ) {
         this.price = priceAsArray;
     }
+    
+    /**
+     * zlNumber
+     * @return {String} e.g. '25'
+     */
     zlNumber () {
-        return this.price[0];
+        return `${this.price[0]}`;
     }
     
+    /**
+     * grNumber
+     * @returns {String} e.g. '10'
+     */
     grNumber () {
-        return ( this.price[1] < 10 ) ? `0${this.price[1]}` : this.price[1];
+        return ( this.price[1] < 10 ) ? `0${this.price[1]}` : `${this.price[1]}`;
     }
     
+    /**
+     * zlWords
+     * @returns {String} e.g. 'dwadzieścia pięć'
+     */
     zlWords () {
         return numberToWords( this.price[0] );
     }
     
+    /**
+     * grWords
+     * @returns {String} e.g. 'dziesięć'
+     */
     grWords () {
         return numberToWords( this.price[1] );
     }
     
+    /**
+     * zl
+     * @returns {String} 'zł'
+     */
     zl () {
         return 'zł';
     }
     
+    /**
+     * gr
+     * @returns {String} 'gr'
+     */
     gr () {
         return 'gr';
     }
     
+    /**
+     * grShort
+     * @returns {String} e.g. '10/100'
+     */
     grShort () {
         return `${this.grNumber( this.price )}/100`;
     }
     
+    /**
+     * zlFull
+     * @returns {String} e.g. 'złotych'
+     */
     zlFull () {
         if ( this.price[0] === 1 ) { 
             return 'złoty'; 
@@ -234,6 +280,10 @@ class ConvertMethods {
         }
     }
     
+    /**
+     * grFull
+     * @returns {String} e.g. 'groszy'
+     */
     grFull () {
         if ( this.price[1] === 1 ) {
             return 'grosz';
@@ -254,12 +304,26 @@ class ConvertMethods {
 //------------------------------------------------------------------------------
 // Exports
 //------------------------------------------------------------------------------
+
+/**
+ * Constructor with one or two arguments
+ * 
+ * @param {String} price Price as string, e.g. '120,50'
+ * @param {String} errMsg [optional] Message for invalid price, default errMsg = 'Błędna kwota!'
+ * @return {Object} Object instance of PriceToPolishWords with method getPrice()
+ */
 class PriceToPolishWords {
     constructor ( price, errMsg ) {
         this.priceArray = ( price ) ? priceToArray( price ) : null;
         this.errMsg = typeof errMsg === 'string' ? errMsg : 'Błędna kwota!';
     }
     
+    /**
+     * Method return price converted to polish words i given (or default) format
+     * 
+     * @param {String} format Rules to price format, default format is 'A'
+     * @returns {String} Price converted to words (in given format)
+     */
     getPrice ( format ) {
         format = setPriceFormat( format );
         const convert = new ConvertMethods( this.priceArray );

@@ -1,5 +1,9 @@
 # Konwertowanie kwoty liczbowej do postaci słownej
 
+[![NPM Version][npm-version]][npm-url]
+[![License][license-image]][license-url]
+[![Downloads][downloads-image]][npm-url]
+
 Skrypt umożliwiający przedstawienie kwot w postaci słownej (w języku polskim). Funkcja pobiera kwotę jako wartość liczbową lub ciąg znakowy i zwraca jej podstać słowną zgodną ze wskazanym formatem wyświetlania (lub wg formatu domyślnego).
 
 ### Instalacja
@@ -94,3 +98,10 @@ price.getPrice('c'); //'sto dwadzieścia zł 50/100'
 
 price.getPrice('zl-words zl-full gr-words gr'); //'sto dwadzieścia złotych pięćdziesiąt gr'
 ```
+
+<!-- vars -->
+[npm-version]:https://img.shields.io/npm/v/price-to-polish-words.svg?style=flat-square
+[npm-url]: https://npmjs.org/package/price-to-polish-words
+[license-image]:https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
+[license-url]: #license
+[downloads-image]: http://img.shields.io/npm/dm/price-to-polish-words.svg?style=flat-square

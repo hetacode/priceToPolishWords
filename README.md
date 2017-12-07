@@ -105,6 +105,6 @@ price.getPrice('zl-words zl-full gr-words gr'); //'sto dwadzieścia złotych pi�
 [npm-url]: https://npmjs.org/package/price-to-polish-words
 [license-image]:https://img.shields.io/badge/license-MIT-blue.svg?style=flat-square
 [license-url]: #license
-[travis-image]:https://img.shields.io/travis/drogimex//price-to-polish-words.svg?style=flat-square
-[travis-url]:https://travis-ci.org/drogimex//price-to-polish-words
+[travis-image]:https://img.shields.io/travis/drogimex/price-to-polish-words.svg?style=flat-square
+[travis-url]:https://travis-ci.org/drogimex/price-to-polish-words
 [downloads-image]: http://img.shields.io/npm/dm/price-to-polish-words.svg?style=flat-square

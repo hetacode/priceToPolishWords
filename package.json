@@ -10,10 +10,6 @@
   },
   "author": "Tomek Sochacki - Drogimex Programming",
   "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/drogimex/priceToPolishWords/issues"
-  },
-  "homepage": "https://github.com/drogimex/priceToPolishWords#readme",
   "devDependencies": {
     "chai": "^4.1.0",
     "mocha": "^3.4.2"

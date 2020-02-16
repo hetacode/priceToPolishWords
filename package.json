@@ -1,5 +1,5 @@
 {
-  "name": "price-to-polish-words",
+  "name": "@hetacode/price-to-polish-words",
   "version": "1.0.2-ts",
   "description": "Convert price to polish words",
   "main": "dist/priceToPolishWords.js",

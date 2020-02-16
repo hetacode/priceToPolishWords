@@ -1,10 +1,12 @@
 {
   "name": "price-to-polish-words",
-  "version": "1.0.2",
+  "version": "1.0.2-ts",
   "description": "Convert price to polish words",
-  "main": "priceToPolishWords.js",
+  "main": "dist/priceToPolishWords.js",
+  "types": "dist/priceToPolishWords.d.ts",
   "scripts": {
-    "test": "mocha"
+    "test": "mocha",
+    "build": "tsc"
   },
   "repository": {
     "type": "git",
@@ -19,5 +21,8 @@
   "devDependencies": {
     "chai": "^4.1.0",
     "mocha": "^3.4.2"
+  },
+  "dependencies": {
+    "typescript": "^3.7.5"
   }
 }

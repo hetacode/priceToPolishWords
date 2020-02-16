@@ -1,11 +1,11 @@
+import { priceToArray } from "./src/priceToArray";
+import { setPriceFormat } from "./src/setPriceFormat";
+import { ConvertMethods } from "./src/ConvertMethods";
+
 /**
  * Convert price (number) to words (polish)
  * @author Tomasz Sochacki - Drogimex Programming
  */
-
-const priceToArray = require( './src/priceToArray' );     //Function
-const setPriceFormat = require( './src/setPriceFormat' ); //Function
-const ConvertMethods = require( './src/ConvertMethods' ); //Class
 
 /**
  * Constructor with one or two arguments
@@ -14,34 +14,35 @@ const ConvertMethods = require( './src/ConvertMethods' ); //Class
  * @param {String} errMsg [optional] Message for invalid price, default errMsg = 'Błędna kwota!'
  * @return {Object} Object instance of PriceToPolishWords with method getPrice()
  */
-class PriceToPolishWords {
-    constructor ( price, errMsg ) {
-        this.priceArray = ( price ) ? priceToArray( price ) : null;
+export class PriceToPolishWords {
+    errMsg: string;
+    priceArray: number[] | null;
+
+    constructor(price: string | number, errMsg: string) {
+        this.priceArray = (price) ? priceToArray(price) : null;
         this.errMsg = typeof errMsg === 'string' ? errMsg : 'Błędna kwota!';
     }
-    
+
     /**
      * Method return price converted to polish words i given (or default) format
      * 
      * @param {String} format Rules to price format, default format is 'A'
      * @returns {String} Price converted to words (in given format)
      */
-    getPrice ( format ) {
-        format = setPriceFormat( format );
-        const convert = new ConvertMethods( this.priceArray );
+    getPrice(format: string) {
+        let formatArr = setPriceFormat(format);
+        const convert = new ConvertMethods(this.priceArray ?? []);
         let result = '';
-        if ( !this.priceArray ) {
+        if (!this.priceArray) {
             return this.errMsg;
         }
-        for ( let method of format ) {
+        for (let method of formatArr ?? []) {
             try {
-                result += convert[method]() + ' ';
-            } catch ( err ) {
+                result += (convert as any)[method]() + ' ';
+            } catch (err) {
                 return 'Invalid format!';
             }
         }
         return result.trim();
     }
 }
-
-module.exports = PriceToPolishWords;

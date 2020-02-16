@@ -8,10 +8,6 @@
     "test": "mocha",
     "build": "tsc"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/drogimex/priceToPolishWords.git"
-  },
   "author": "Tomek Sochacki - Drogimex Programming",
   "license": "MIT",
   "bugs": {

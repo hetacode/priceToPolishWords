@@ -1,4 +1,4 @@
-const polishWords = [
+export const polishWords = [
     ['miliard', 1e9],
     ['milion', 1e6],
     ['tysiąc', 1e3],
@@ -39,5 +39,3 @@ const polishWords = [
     ['dwa', 2],
     ['jeden', 1]
 ];
-
-module.exports = polishWords;

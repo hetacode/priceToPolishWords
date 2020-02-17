@@ -19,16 +19,16 @@ const defaultFormats = {
 * @param {String} User formatting rules as string 
 * @return {Array} For example: [zlWords, zlFull, ...]
 */
-const formatRulesToMethodName = function ( str ) {
-    let rulesToArray = str.match( /[-a-z]+/gi ); //'zl-words zl' -> ['zl-words', 'zl']
-    return rulesToArray.map( oneRule => {
-        return oneRule.replace( /(-)([a-z])/gi, ( match, p1, p2 ) => {
+const formatRulesToMethodName = function (str: string) {
+    let rulesToArray = str.match(/[-a-z]+/gi); //'zl-words zl' -> ['zl-words', 'zl']
+    return rulesToArray?.map(oneRule => {
+        return oneRule.replace(/(-)([a-z])/gi, (match, p1, p2) => {
             return p2.toUpperCase(); //'zl-words' -> 'zlWords'
-        } );
-    } ); //['zl-words', 'zl'] -> ['zlWords', 'zl']
+        });
+    }); //['zl-words', 'zl'] -> ['zlWords', 'zl']
 };
 
-const setPriceFormat = function ( formatRules ) {
+export const setPriceFormat = (formatRules: any) => {
     /**
      * Example price: "125,50zł"
      * 
@@ -44,25 +44,23 @@ const setPriceFormat = function ( formatRules ) {
      */
 
     //In first instance set default rules (typeA)
-    let formatRulesArray = formatRulesToMethodName( defaultFormats.typeA );
-    
-    if ( typeof formatRules === 'string' ) {
-        if ( formatRules.length === 1 ) {
+    let formatRulesArray = formatRulesToMethodName(defaultFormats.typeA);
+
+    if (typeof formatRules === 'string') {
+        if (formatRules.length === 1) {
             let type = `type${formatRules.toUpperCase()}`;
-            if ( defaultFormats.hasOwnProperty( type ) ) {
-                formatRulesArray = formatRulesToMethodName( defaultFormats[type] );
+            if (defaultFormats.hasOwnProperty(type)) {
+                formatRulesArray = formatRulesToMethodName((defaultFormats as any)[type]);
             }
         }
         else {
-            let tmp = formatRulesToMethodName( formatRules );
-            formatRulesArray = ( tmp.length ) ? tmp : formatRulesArray;
+            let tmp = formatRulesToMethodName(formatRules);
+            formatRulesArray = (tmp?.length) ? tmp : formatRulesArray;
         }
     }
-    else if ( typeof formatRules !== 'undefined' ) {
+    else if (typeof formatRules !== 'undefined') {
         formatRulesArray = [''];
     }
-    
+
     return formatRulesArray; //e.g: ['zlWords', 'zl', 'grWords', 'gr']
 };
-
-module.exports = setPriceFormat;
